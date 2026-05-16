@@ -19,6 +19,7 @@ export default function Page() {
   const [posts, setPosts] = useState<string[]>([]);
   const [randomPost, setRandomPost] = useState("");
 
+  // LOAD POSTS
   async function loadPosts() {
     const querySnapshot = await getDocs(collection(db, "posts"));
 
@@ -39,13 +40,21 @@ export default function Page() {
         loadedPosts[Math.floor(Math.random() * loadedPosts.length)];
 
       setRandomPost(random);
+    } else {
+      setRandomPost("");
     }
   }
 
+  // FIXED EFFECT
   useEffect(() => {
-    loadPosts();
+    const fetchPosts = async () => {
+      await loadPosts();
+    };
+
+    fetchPosts();
   }, []);
 
+  // SEND POST
   async function sendPost() {
     if (text.trim() === "") return;
 
@@ -58,8 +67,8 @@ export default function Page() {
 
     setPage("sent");
 
-    setTimeout(() => {
-      loadPosts();
+    setTimeout(async () => {
+      await loadPosts();
       setPage("home");
     }, 2500);
   }
@@ -68,19 +77,13 @@ export default function Page() {
   if (page === "sent") {
     return (
       <main className="min-h-screen bg-black text-white flex items-center justify-center">
-
         <div className="text-center">
-
-          <div className="text-8xl animate-bounce">
-            ✦
-          </div>
+          <div className="text-8xl animate-bounce">✦</div>
 
           <p className="mt-6 text-gray-300 text-xl">
             Your unsaid thing drifted away...
           </p>
-
         </div>
-
       </main>
     );
   }
@@ -89,13 +92,11 @@ export default function Page() {
   if (page === "write") {
     return (
       <main className="min-h-screen bg-black text-white flex items-center justify-center px-6 relative overflow-hidden">
-
         <div className="absolute top-[-100px] left-[-100px] w-[350px] h-[350px] bg-fuchsia-600/30 blur-[120px] rounded-full animate-pulse"></div>
 
         <div className="absolute bottom-[-100px] right-[-100px] w-[350px] h-[350px] bg-violet-700/30 blur-[120px] rounded-full animate-pulse"></div>
 
         <div className="relative z-10 max-w-xl w-full text-center">
-
           <h1 className="text-6xl font-black">
             Write Something
           </h1>
@@ -124,9 +125,7 @@ export default function Page() {
           >
             Back
           </button>
-
         </div>
-
       </main>
     );
   }
@@ -135,13 +134,11 @@ export default function Page() {
   if (page === "hear") {
     return (
       <main className="min-h-screen bg-black text-white flex items-center justify-center px-6 relative overflow-hidden">
-
         <div className="absolute top-[-100px] left-[-100px] w-[350px] h-[350px] bg-fuchsia-600/30 blur-[120px] rounded-full animate-pulse"></div>
 
         <div className="absolute bottom-[-100px] right-[-100px] w-[350px] h-[350px] bg-violet-700/30 blur-[120px] rounded-full animate-pulse"></div>
 
         <div className="relative z-10 max-w-xl w-full text-center">
-
           <h1 className="text-6xl font-black">
             Hear Someone
           </h1>
@@ -163,9 +160,7 @@ export default function Page() {
           >
             Back
           </button>
-
         </div>
-
       </main>
     );
   }
@@ -173,7 +168,6 @@ export default function Page() {
   // HOME
   return (
     <main className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden px-6 text-white">
-
       <div className="absolute top-[-100px] left-[-100px] w-[350px] h-[350px] bg-fuchsia-600/30 blur-[120px] rounded-full animate-pulse"></div>
 
       <div className="absolute bottom-[-100px] right-[-100px] w-[350px] h-[350px] bg-violet-700/30 blur-[120px] rounded-full animate-pulse"></div>
@@ -186,7 +180,6 @@ export default function Page() {
       </div>
 
       <div className="relative z-10 max-w-xl w-full text-center">
-
         <p className="uppercase tracking-[0.4em] text-sm text-gray-500">
           anonymous thoughts
         </p>
@@ -202,7 +195,6 @@ export default function Page() {
         </p>
 
         <div className="mt-14 flex flex-col gap-5">
-
           <button
             onClick={() => setPage("write")}
             className="w-full py-5 rounded-3xl bg-white text-black text-lg font-bold hover:scale-105 transition duration-300 shadow-2xl"
@@ -211,19 +203,16 @@ export default function Page() {
           </button>
 
           <button
-            onClick={() => {
-              loadPosts();
+            onClick={async () => {
+              await loadPosts();
               setPage("hear");
             }}
             className="w-full py-5 rounded-3xl bg-zinc-900/80 border border-zinc-700 text-lg hover:bg-zinc-800 transition duration-300 backdrop-blur-md"
           >
             Want To Hear Someone
           </button>
-
         </div>
-
       </div>
-
     </main>
   );
 }
